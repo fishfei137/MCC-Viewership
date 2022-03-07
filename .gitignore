@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+misc/
+.Rproj.user/
+main_data/mcc15
+main_data/mcc16
+main_data/mcc17
+main_data/mcc18
+main_data/mcc19
+main_data/mccas
+main_data/mccr
+main_data/past
+.RData/
