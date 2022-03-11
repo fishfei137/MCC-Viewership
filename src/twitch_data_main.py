@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 now = now_bst.now()
 logger = logging.getLogger(__name__)
 
-mcc = "test"   # change
+mcc = open('./src/mcc.txt').readlines()[0]
 
 with open(f"./main_data/{mcc}/{mcc}_user_logins.json", 'r') as f:
     user_logins = json.load(f)

@@ -12,7 +12,7 @@ import error_alert
 
 now = now_bst.now()
 
-mcc = "test"   # change
+mcc = open('./src/mcc.txt').readlines()[0]
 
 api_key = os.environ.get('yt_apikey')
 youtube = build('youtube', 'v3', developerKey=api_key)
