@@ -7,7 +7,7 @@ import now_bst
 
 now = now_bst.now()
 
-mcc = "test"   # change
+mcc = open('./src/mcc.txt').readlines()[0]
 
 base_url = 'https://api.twitch.tv/helix/'
 auth_url = 'https://id.twitch.tv/oauth2/token'
