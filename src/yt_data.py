@@ -10,12 +10,14 @@ from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 import error_alert
 
-now = now_bst.now()
 
+now = now_bst.now()
 mcc = open('./src/mcc.txt').readlines()[0]
 
-api_key = os.environ.get('yt_apikey')
-youtube = build('youtube', 'v3', developerKey=api_key)
+logging.basicConfig(level=logging.INFO,
+                    handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/{mcc}_output.log",
+                                                    mode='a'), logging.StreamHandler(sys.stdout)])
+
 
 with open(f"./main_data/{mcc}/{mcc}_yt_channels_info.json", 'r') as f:
     channels_info = json.load(f)
@@ -25,6 +27,9 @@ with open(f"./main_data/{mcc}/{mcc}_teams.json", 'r') as f:
 
 
 base_url = 'https://www.youtube.com/'
+
+api_key = os.environ.get('yt_apikey')
+youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)
 
 
 def get_sub_count(channel_id):
@@ -82,14 +87,12 @@ def get_livestream_details(video_id):
         return [0, 0]
 
 
-def main():
-    logging.basicConfig(level=logging.INFO,
-                        handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/youtube_output.log",
-                                                      mode='a'), logging.StreamHandler(sys.stdout)])
+def main(game):
+    # logging.basicConfig(level=logging.INFO,
+    #                     handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/youtube_output.log",
+    #                                                   mode='a'), logging.StreamHandler(sys.stdout)])
 
     res = {}
-    game = mcc_website.get_game()
-    mcc_website.driver.quit()
 
     offline = []
     for k, v in channels_info.items():
@@ -139,7 +142,9 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        game = mcc_website.get_game()
+        mcc_website.driver.quit()
+        main(game)
     except:
         logging.exception(f"{now}")
         error_alert.tele_notify(msg = '*ERROR OCCURED*', remarks = '*Youtube:*')

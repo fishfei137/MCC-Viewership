@@ -1,9 +1,9 @@
 import json
 import requests
+import re
 import pandas as pd
 import itertools
 import now_bst
-
 
 now = now_bst.now()
 
@@ -13,21 +13,28 @@ with open(f"./main_data/{mcc}/{mcc}_user_logins.json", 'r') as f:
     user_logins = json.load(f)
 
 
-for i in range(len(user_logins)):   # convert to lowercase, as only lowercase is accepted
-    user_logins[i] = user_logins[i].lower()
+bots = ["streamelements", "streamlabs"]
+def is_bot(string):
+    if (string in bots) or re.match(".*bot$", string):
+        return True
+    else:
+        return False
 
 
 def get_chatters_info(user_logins): # multiple users
     chatters_info = {}
     for user in user_logins:
-        url = f'https://tmi.twitch.tv/group/user/{user}/chatters'
+        url = f'https://tmi.twitch.tv/group/user/{user.lower()}/chatters'
         response = requests.get(url)
 
         keys = ['vips', 'moderators', 'staff', 'admins', 'global_mods', 'viewers']  # excludes broadcaster
         chatters = []
         for k in keys:
             for c in response.json()['chatters'][k]:
-                chatters.append(c)  # unlists / flattens chatters
+                if k=='moderators' and is_bot(c):   # exclude chatbots
+                    pass
+                else:
+                    chatters.append(c)  # unlists / flattens chatters
 
         chatters_info[user] = [response.json()['chatter_count'], chatters]
     return chatters_info
@@ -92,11 +99,10 @@ def unique_total(user_logins):
     return res
 # {'c_1': [39, 79], 'c_2': [95, 176], 'c_3': [92, 168]}
 
-
 print('chatters info\n', get_chatters_info(user_logins))
 print('channel * chatters\n', channel_chatters(user_logins))  
 print('channel * channel, # of overlaps\n', channels_overlap(user_logins))
-print('channel: [unique, total]', unique_total(user_logins))
+print('channel: [unique, total]\n', unique_total(user_logins))
 
 
 # dic = {'col1':[0,1,0], 'col2': [1,1,0], 'col3': [1,1,1]}

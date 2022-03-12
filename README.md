@@ -9,7 +9,7 @@ Before every MCC, I will manually type in the following:
 
 - mcc_test_teams.json: Each team and their members
 - mcc_test_user_logins.json: List of all Twitch streamers' usernames
-- mcc*test_yt_channel_info.json: List of all Youtube streamers' usernames, user_id, video_id *(video_id is initialised as 0)\_
+- mcc_test_yt_channel_info.json: List of all Youtube streamers' usernames, user_id, video_id (video_id is initialised as 0)
 - mcc.txt: mcc event _(ensure naming of files is consistent throughout)_
 
 I used relative paths in the code, so ensure you have the same folder structure.
