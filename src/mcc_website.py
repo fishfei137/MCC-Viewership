@@ -34,6 +34,6 @@ def get_game():
     except:
         game = ''
         logging.warning(f"{now} game not found")
-        error_alert.tele_notify('*Game not found*')
+        error_alert.tele_notify(remarks = '*Game not found*')
     return game
 #driver.quit()
