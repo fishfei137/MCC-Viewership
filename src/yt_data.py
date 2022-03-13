@@ -1,9 +1,10 @@
 import os
-import csv
 import subprocess
 import json
 import logging
 import sys
+import os.path
+import pandas as pd
 import now_bst
 import mcc_website
 from googleapiclient.discovery import build
@@ -88,9 +89,6 @@ def get_livestream_details(video_id):
 
 
 def main(game):
-    # logging.basicConfig(level=logging.INFO,
-    #                     handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/youtube_output.log",
-    #                                                   mode='a'), logging.StreamHandler(sys.stdout)])
 
     res = {}
 
@@ -129,15 +127,18 @@ def main(game):
         logging.info(f"{now} vid id json updated")
 
     try:
-        with open(f"./main_data/{mcc}/data/youtube_data.csv", 'a', newline='') as f:
-            writer = csv.writer(f)
-            for k, v in res.items():
-                res_list = [k] + v
-                writer.writerow(res_list)  # channels, id, followers, viewers, start, output, game, platform, team
+        res_df = pd.DataFrame.from_dict(res, orient='index', 
+                                        columns=['user_id', 'Followers', 'Viewers', 'Start', 'Time', 'Game', 'Platform', 'Team'])
+
+        header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_youtube_data.csv")
+
+        res_df.to_csv(f"./main_data/{mcc}/data/{mcc}_youtube_data.csv", mode='a', header = not header, index_label = 'Channel') # add header only if file doesnt exist
         logging.info(f"{now} yt written to file")
+
     except PermissionError:
         logging.error(f"{now} excel sheet open")
-        error_alert.tele_notify(msg = '*PERMISSION ERROR*, excel sheet open', remarks = '*Youtube:*')
+        error_alert.tele_notify(msg = 'excel sheet open', remarks = '*Youtube: PERMISSION ERROR *')
+
 
 
 if __name__ == "__main__":
@@ -147,4 +148,4 @@ if __name__ == "__main__":
         main(game)
     except:
         logging.exception(f"{now}")
-        error_alert.tele_notify(msg = '*ERROR OCCURED*', remarks = '*Youtube:*')
+        error_alert.tele_notify(remarks = '*Youtube: ERROR OCCURED *')
