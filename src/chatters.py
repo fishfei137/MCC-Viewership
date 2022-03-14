@@ -4,9 +4,11 @@ import re
 import pandas as pd
 import itertools
 import logging
+import os
 import sys
 import now_bst
 import error_alert
+from timeit import default_timer as timer
 
 now = now_bst.now()
 
@@ -109,14 +111,16 @@ def unique_total(user_logins):
 def main():
     
     try:
-        channels_overlap(user_logins).to_csv(f"./main_data/{mcc}/data/{mcc}_channels_overlap.csv", mode='a', index=False)
+        header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_channels_overlap.csv")
+        channels_overlap(user_logins).to_csv(f"./main_data/{mcc}/data/{mcc}_channels_overlap.csv", mode='a', header = not header, index=False)  # add header only if file doesnt exist
         logging.info(f"{now} channels overlap written to file")
     except PermissionError:
         logging.error(f"{now} excel sheet open")
         error_alert.tele_notify(msg = '*PERMISSION ERROR*, channels overlap excel sheet open', remarks = '*CHATTERS:*')
 
     try:
-        unique_total(user_logins).to_csv(f"./main_data/{mcc}/data/{mcc}_unique_total.csv", mode='a', index_label='Channel')
+        header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_unique_total.csv")
+        unique_total(user_logins).to_csv(f"./main_data/{mcc}/data/{mcc}_unique_total.csv", mode='a', header = not header, index_label='Channel')  # add header only if file doesnt exist
         logging.info(f"{now} unique total written to file")
     except PermissionError:
         logging.error(f"{now} excel sheet open")
