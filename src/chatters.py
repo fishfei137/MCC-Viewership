@@ -16,6 +16,9 @@ mcc = open('./src/mcc.txt').readlines()[0]
 
 with open(f"./main_data/{mcc}/{mcc}_user_logins.json", 'r') as f:
     user_logins = json.load(f)
+    
+with open(f"./main_data/{mcc}/data/{mcc}_chatters_list.json", 'r') as f:
+    old_dict = json.load(f)
 
 logging.basicConfig(level=logging.INFO,
                     handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/{mcc}_output.log",
@@ -51,8 +54,7 @@ def get_chatters_info(user_logins): # multiple users
 
 
 # n*m sparse matrix, n=channel, m=chatters, where 1 denotes if chatters is in the channel, else 0
-def channel_chatters(user_logins):
-    chatters_info = get_chatters_info(user_logins)
+def channel_chatters(user_logins, chatters_info):
     df1 = pd.DataFrame()
 
     for user in user_logins:
@@ -71,8 +73,7 @@ def channel_chatters(user_logins):
 
 
 # n*4 matrix: [time, c_1, c_2, overlap]
-def channels_overlap(user_logins):
-    df1 = channel_chatters(user_logins)
+def channels_overlap(df1):
 
     pairs = []
     for p in itertools.combinations(df1.index, 2):
@@ -89,13 +90,11 @@ def channels_overlap(user_logins):
 
 
 # dict {channel: [unique, total, percent]}
-def unique_total(user_logins):
-    info = get_chatters_info(user_logins)
-    df1 = channel_chatters(user_logins)
+def unique_total(chatters_info, df1):
     
     res_dict = {}
     for channel in df1.index:
-        total = info[channel][0]
+        total = chatters_info[channel][0]
         unique = 0
 
         for chatter in df1.columns:
@@ -108,11 +107,38 @@ def unique_total(user_logins):
     return res
 
 
+# union both old and new lists
+def merge_2_dicts(dict1, dict2):
+    res = {}
+    for k1, v1 in dict1.items():
+        if k1 not in res:
+            res[k1] = v1
+        for k2, v2 in dict2.items():
+            if k2 not in res:
+                res[k2] = v2
+            elif k1 == k2:
+                temp = dict1[k1] + dict2[k2]
+                res[k1] = list(dict.fromkeys(temp))
+    return res
+
+
+# def unique_viewers(user_logins):
+#     df1 = channel_chatters(user_logins)
+    
+#     res_df = df1.sum(axis=1)
+    
+#     return res_df
+ 
+
+
 def main():
+    
+    chatters_info = get_chatters_info(user_logins)
+    df1 = channel_chatters(user_logins, chatters_info)
     
     try:
         header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_channels_overlap.csv")
-        channels_overlap(user_logins).to_csv(f"./main_data/{mcc}/data/{mcc}_channels_overlap.csv", mode='a', header = not header, index=False)  # add header only if file doesnt exist
+        channels_overlap(df1).to_csv(f"./main_data/{mcc}/data/{mcc}_channels_overlap.csv", mode='a', header = not header, index=False)  # add header only if file doesnt exist
         logging.info(f"{now} channels overlap written to file")
     except PermissionError:
         logging.error(f"{now} excel sheet open")
@@ -120,11 +146,25 @@ def main():
 
     try:
         header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_unique_total.csv")
-        unique_total(user_logins).to_csv(f"./main_data/{mcc}/data/{mcc}_unique_total.csv", mode='a', header = not header, index_label='Channel')  # add header only if file doesnt exist
+        unique_total(chatters_info, df1).to_csv(f"./main_data/{mcc}/data/{mcc}_unique_total.csv", mode='a', header = not header, index_label='Channel')  # add header only if file doesnt exist
         logging.info(f"{now} unique total written to file")
     except PermissionError:
         logging.error(f"{now} excel sheet open")
         error_alert.tele_notify(msg = '*PERMISSION ERROR*, unique total excel sheet open', remarks = '*CHATTERS:*')
+        
+    try:
+        new_dict = {}
+        for k, v in chatters_info.items():
+            new_dict[k] = v[1]
+            
+        final = merge_2_dicts(old_dict, new_dict)
+        with open(f"./main_data/{mcc}/data/{mcc}_chatters_list.json", 'w') as f:
+            json.dump(final, f)
+        logging.info(f"{now} chatters list json updated")
+        
+    except:
+        logging.error(f"{now} chatters list json")
+        error_alert.tele_notify(msg = 'ERROR chatters list json', remarks = '*CHATTERS:*')
 
 
 if __name__ == "__main__":

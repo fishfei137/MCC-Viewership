@@ -142,7 +142,7 @@ def main(game):
         res_df = pd.DataFrame.from_dict(res, orient='index', 
                                         columns=['user_id', 'Followers', 'Viewers', 'Start', 'Time', 'Game', 'Platform', 'Team'])
 
-        header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_youtube_data.csv")
+        header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_twitch_data.csv")
         res_df.to_csv(f"./main_data/{mcc}/data/{mcc}_twitch_data.csv", mode='a', header = not header, index_label = 'Channel')  # add header only if file doesnt exist
 
         logging.info(f"{now} twitch written to file")
