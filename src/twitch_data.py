@@ -1,7 +1,6 @@
 import os
 import sys
 import requests
-import csv
 import json
 import logging
 import pandas as pd

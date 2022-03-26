@@ -5,7 +5,6 @@ import logging
 import sys
 import now_bst
 import error_alert
-from timeit import default_timer as timer
 
 now = now_bst.now()
 
@@ -14,9 +13,12 @@ mcc = open('./src/mcc.txt').readlines()[0]
 with open(f"./main_data/{mcc}/{mcc}_user_logins.json", 'r') as f:
     user_logins = json.load(f)
     
-with open(f"./main_data/{mcc}/data/{mcc}_chatters_list.json", 'r') as f:
-    old_dict = json.load(f)
-
+try:    
+    with open(f"./main_data/{mcc}/data/{mcc}_chatters_list.json", 'r') as f:
+        old_dict = json.load(f)
+except FileNotFoundError:
+    old_dict = {user_logins[0]: []}
+    
 logging.basicConfig(level=logging.INFO,
                     handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/{mcc}_output.log",
                                                   mode='a'), logging.StreamHandler(sys.stdout)])
@@ -84,7 +86,7 @@ def main():
         
     except:
         logging.error(f"{now} chatters list json")
-        error_alert.tele_notify(msg = 'ERROR chatters list json', remarks = '*CHATTERS:*')
+        error_alert.tele_notify(msg = 'ERROR chatters list json', remarks = '*CHATTERS:\n*')
 
 
 if __name__ == "__main__":

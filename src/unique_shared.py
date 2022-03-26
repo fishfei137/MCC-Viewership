@@ -8,18 +8,14 @@ import itertools
 
 # only run after event ends
 
-# check if chatters list alr exists, if not create one
-# after mcc ends, should have full list of all chatters who visited each channel
-# separate file: run it through channel_chatters
-# try catch for if channel not in json
-
 now = now_bst.now()
 
 mcc = open('./src/mcc.txt').readlines()[0]
 
 with open(f"./main_data/{mcc}/{mcc}_user_logins.json", 'r') as f:
     user_logins = json.load(f)
-        
+ 
+# after mcc ends, should have full list of all chatters who visited each channel       
 with open(f"./main_data/{mcc}/data/{mcc}_chatters_list.json", 'r') as f:
     chatters_dict = json.load(f)
 
@@ -32,10 +28,6 @@ def unique(chatters_dict):
     unique_df = pd.DataFrame(unique.items(), columns = ['Channel', 'Unique'])
     
     return unique_df
-
-# twitch = pd.read_csv(f"./main_data/{mcc}/data/{mcc}_twitch_data.csv")
-# final = pd.merge(twitch, unique_df, how='left', on='Channel')
-# print(final)
 
 
 # n*m sparse matrix, n=channel, m=chatters, where 1 denotes if chatters is in the channel, else 0
@@ -80,7 +72,7 @@ def main():
         logging.info(f"{now} unique viewers written to file")
     except PermissionError:
         logging.error(f"{now} excel sheet open")
-        error_alert.tele_notify(msg = 'unique viewers excel sheet open', remarks = '*UNIQUE_SHARED: PERMISSION ERROR*')
+        error_alert.tele_notify(msg = 'unique viewers excel sheet open', remarks = '*UNIQUE_SHARED: PERMISSION ERROR\n*')
     
     df1 = channel_chatters(chatters_dict)
     shared = channels_overlap(df1)
@@ -89,7 +81,7 @@ def main():
         logging.info(f"{now} channels overlap written to file")
     except PermissionError:
         logging.error(f"{now} excel sheet open")
-        error_alert.tele_notify(msg = 'channels overlap excel sheet open', remarks = '*UNIQUE_SHARED: PERMISSION ERROR*')
+        error_alert.tele_notify(msg = 'channels overlap excel sheet open', remarks = '*UNIQUE_SHARED: PERMISSION ERROR\n*')
   
         
 if __name__ == "__main__":
