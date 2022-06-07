@@ -1,9 +1,10 @@
 import os
+import os.path
 import subprocess
 import json
 import logging
 import sys
-import os.path
+from dotenv import load_dotenv, find_dotenv
 import pandas as pd
 import now_bst
 import mcc_website
@@ -13,7 +14,8 @@ import error_alert
 
 
 now = now_bst.now()
-mcc = open('./src/mcc.txt').readlines()[0]
+with open('./src/mcc.json', 'r') as f:
+    mcc = json.load(f)
 
 logging.basicConfig(level=logging.INFO,
                     handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/{mcc}_output.log",
@@ -29,6 +31,7 @@ with open(f"./main_data/{mcc}/{mcc}_teams.json", 'r') as f:
 
 base_url = 'https://www.youtube.com/'
 
+load_dotenv(find_dotenv())
 api_key = os.environ.get('yt_apikey')
 youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)
 
@@ -79,7 +82,7 @@ def get_livestream_details(video_id):
 
         viewers = response3.get('items')[0].get('liveStreamingDetails').get('concurrentViewers')
         start_str = response3.get('items')[0].get('liveStreamingDetails').get('actualStartTime')
-        start_dt = datetime.strptime(start_str, "%Y-%m-%dT%H:%M:%SZ") #+ timedelta(hours=1)
+        start_dt = datetime.strptime(start_str, "%Y-%m-%dT%H:%M:%SZ") + timedelta(hours=1)
         start = start_dt.strftime('%H:%M')
 
         return [viewers, start]

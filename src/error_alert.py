@@ -2,11 +2,12 @@ import notifiers
 from notifiers import get_notifier
 import now_bst
 import os
-import re
+from dotenv import load_dotenv, find_dotenv
 
 # notify when: python scripts have error/exceptions + channels that are offline
 
 now = now_bst.now()
+load_dotenv(find_dotenv())
 token = os.environ.get('mcc_error_notify_bot_token')
 chat_id = os.environ.get('mcc_error_notify_grp_chat_id')
 

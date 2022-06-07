@@ -8,7 +8,8 @@ import error_alert
 
 now = now_bst.now()
 
-mcc = open('./src/mcc.txt').readlines()[0]
+with open('./src/mcc.json', 'r') as f:
+    mcc = json.load(f)
 
 with open(f"./main_data/{mcc}/{mcc}_user_logins.json", 'r') as f:
     user_logins = json.load(f)
@@ -23,10 +24,9 @@ logging.basicConfig(level=logging.INFO,
                     handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/{mcc}_output.log",
                                                   mode='a'), logging.StreamHandler(sys.stdout)])
 
+
 def is_bot(string):
-    if re.match(".*bot$", string):
-        return True
-    elif re.match("^stream.*", string):
+    if re.match(".*bot$", string) or re.match("^stream.*", string):
         return True
     else:
         return False

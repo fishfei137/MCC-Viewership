@@ -8,9 +8,11 @@ import now_bst
 import mcc_website
 import error_alert
 from datetime import datetime, timedelta
+from dotenv import load_dotenv, find_dotenv
 
 now = now_bst.now()
-mcc = open('./src/mcc.txt').readlines()[0]
+with open('./src/mcc.json', 'r') as f:
+    mcc = json.load(f)
 
 logging.basicConfig(level=logging.INFO,
                     handlers=[logging.FileHandler(f"./main_data/{mcc}/logs/{mcc}_output.log",
@@ -26,6 +28,7 @@ with open(f"./main_data/{mcc}/{mcc}_teams.json", 'r') as f:
 
 base_url = 'https://api.twitch.tv/helix/'
 auth_url = 'https://id.twitch.tv/oauth2/token'
+load_dotenv(find_dotenv())
 client_id = os.environ.get('twitch_client_id')
 secret = os.environ.get('twitch_secret')
 indent = 2
@@ -86,7 +89,7 @@ def get_stream_details(user_logins):
         user_name = stream_info.json()['data'][i]['user_name']
         viewers = stream_info.json()['data'][i]['viewer_count']
         start_str = stream_info.json()['data'][i]['started_at']
-        start_dt = datetime.strptime(start_str, "%Y-%m-%dT%H:%M:%SZ") #+ timedelta(hours=1)
+        start_dt = datetime.strptime(start_str, "%Y-%m-%dT%H:%M:%SZ") + timedelta(hours=1)
         start = start_dt.strftime('%H:%M')
         stream[user_name] = [viewers, start]
 

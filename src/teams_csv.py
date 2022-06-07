@@ -2,7 +2,8 @@ import json, csv
 
 # generate csv file for use in tableau
 
-mcc = open('./src/mcc.txt').readlines()[0]
+with open('./src/mcc.json', 'r') as f:
+    mcc = json.load(f)
 
 with open(f"./main_data/{mcc}/{mcc}_teams.json", 'r') as f:
     teams = json.load(f)
