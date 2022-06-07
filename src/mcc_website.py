@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import ElementNotVisibleException, NoSuchElementException, TimeoutException
+from dotenv import load_dotenv, find_dotenv
 import logging
 import os
 import now_bst
@@ -14,6 +15,7 @@ now = now_bst.now()
 
 base_url = 'https://mcc.live'
 
+load_dotenv(find_dotenv())
 driver_path = os.environ.get('chrome_driver_path')
 s = Service(driver_path)
 options = Options()
