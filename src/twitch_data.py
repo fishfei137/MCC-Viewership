@@ -9,6 +9,8 @@ import mcc_website
 import error_alert
 from datetime import datetime, timedelta
 from dotenv import load_dotenv, find_dotenv
+import sqlalchemy as sa
+
 
 now = now_bst.now()
 with open('./src/mcc.json', 'r') as f:
@@ -62,21 +64,21 @@ def print_response(response):
 
 
 # pass in a twitch username and get the user's current live stream info
-def get_user_streams_query(user_logins):  #user_logins must be a list (multiple users)
+def get_user_streams_query(user_logins):  # user_logins must be a list (multiple users)
     temp = f'streams?user_login={user_logins[0]}'
     for i in user_logins[1:]:
         temp = f'{temp}&user_login={i}'
     return temp
 
 
-def get_user_id_query(user_logins):  #user_logins must be a list (multiple users)
+def get_user_id_query(user_logins):  # user_logins must be a list (multiple users)
     temp = f'users?login={user_logins[0]}'
     for i in user_logins[1:]:
         temp = f'{temp}&login={i}'
     return temp
 
 
-def get_followers_query(user_id):  #single user_id
+def get_followers_query(user_id):  # single user_id
     return f'users/follows?to_id={user_id}'
 
 
@@ -89,7 +91,7 @@ def get_stream_details(user_logins):
         user_name = stream_info.json()['data'][i]['user_name']
         viewers = stream_info.json()['data'][i]['viewer_count']
         start_str = stream_info.json()['data'][i]['started_at']
-        start_dt = datetime.strptime(start_str, "%Y-%m-%dT%H:%M:%SZ") + timedelta(hours=1)
+        start_dt = datetime.strptime(start_str, "%Y-%m-%dT%H:%M:%SZ") + timedelta(hours=1)  # bst
         start = start_dt.strftime('%H:%M')
         stream[user_name] = [viewers, start]
 
@@ -101,7 +103,7 @@ def get_user_id(user_logins):
     user_info = get_response(query2)
 
     user_id = {}
-    for i in range(len(user_logins)):
+    for i in range(len(user_logins)-1):
         user_id[f"{user_info.json()['data'][i]['display_name']}"] = int(user_info.json()['data'][i]['id'])
 
     return user_id
@@ -140,18 +142,22 @@ def main(game):
     if game != '' and offline:   # only notify if event has started and theres ppl offline
         error_alert.tele_notify(msg = '\n'.join(offline), remarks = '*Twitch offline:*\n')
 
-    try:
-        res_df = pd.DataFrame.from_dict(res, orient='index', 
-                                        columns=['user_id', 'Followers', 'Viewers', 'Start', 'Time', 'Game', 'Platform', 'Team'])
-
-        header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_twitch_data.csv")
-        res_df.to_csv(f"./main_data/{mcc}/data/{mcc}_twitch_data.csv", mode='a', header = not header, index_label = 'Channel')  # add header only if file doesnt exist
-
-        logging.info(f"{now} twitch written to file")
-
-    except PermissionError:
-        logging.error(f"{now} excel sheet open")
-        error_alert.tele_notify(msg = 'excel sheet open', remarks = '*Twitch: PERMISSION ERROR *')
+    # sql
+    res_df = pd.DataFrame.from_dict(res, orient='index', 
+                                        columns=['user_id', 'Followers', 'Viewers', 'Start', 'Time', 'Game', 'Platform', 'Team']) 
+    res_df.reset_index(inplace=True)
+    res_df = res_df.rename(columns = {'index': 'Channel'})
+    res_df['event'] =  mcc.upper()
+        
+    mysql_user = os.environ.get("mysql_user")
+    mysql_pw = os.environ.get('mysql_pw')
+    mysql_db = os.environ.get("mysql_db")
+    mysql_twitch = os.environ.get("mysql_twitch")
+    
+    my_conn = sa.create_engine(f"mysql+pymysql://{mysql_user}:{mysql_pw}@localhost/{mysql_db}")
+    res_df.to_sql(con=my_conn, name=mysql_twitch, if_exists='append', index=False)
+         
+    logging.info(f"{now} inserted into {mysql_db}")
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ import mcc_website
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 import error_alert
+import sqlalchemy as sa
 
 
 now = now_bst.now()
@@ -129,18 +130,23 @@ def main(game):
         json.dump(channels_info, f)
         logging.info(f"{now} vid id json updated")
 
-    try:
-        res_df = pd.DataFrame.from_dict(res, orient='index', 
-                                        columns=['user_id', 'Followers', 'Viewers', 'Start', 'Time', 'Game', 'Platform', 'Team'])
 
-        header = os.path.exists(f"./main_data/{mcc}/data/{mcc}_youtube_data.csv")
-
-        res_df.to_csv(f"./main_data/{mcc}/data/{mcc}_youtube_data.csv", mode='a', header = not header, index_label = 'Channel') # add header only if file doesnt exist
-        logging.info(f"{now} yt written to file")
-
-    except PermissionError:
-        logging.error(f"{now} excel sheet open")
-        error_alert.tele_notify(msg = 'excel sheet open', remarks = '*Youtube: PERMISSION ERROR *')
+    # sql
+    res_df = pd.DataFrame.from_dict(res, orient='index', 
+                                        columns=['user_id', 'Followers', 'Viewers', 'Start', 'Time', 'Game', 'Platform', 'Team']) 
+    res_df.reset_index(inplace=True)
+    res_df = res_df.rename(columns = {'index': 'Channel'})
+    res_df['event'] =  mcc.upper()
+        
+    mysql_user = os.environ.get("mysql_user")
+    mysql_pw = os.environ.get('mysql_pw')
+    mysql_db = os.environ.get("mysql_db")
+    mysql_yt = os.environ.get("mysql_yt")
+    
+    my_conn = sa.create_engine(f"mysql+pymysql://{mysql_user}:{mysql_pw}@localhost/{mysql_db}")
+    res_df.to_sql(con=my_conn, name=mysql_yt, if_exists='append', index=False)
+         
+    logging.info(f"{now} inserted into {mysql_db}")
 
 
 
