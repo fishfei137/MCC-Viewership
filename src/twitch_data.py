@@ -103,7 +103,7 @@ def get_user_id(user_logins):
     user_info = get_response(query2)
 
     user_id = {}
-    for i in range(len(user_logins)-1):
+    for i in range(len(user_logins)):
         user_id[f"{user_info.json()['data'][i]['display_name']}"] = int(user_info.json()['data'][i]['id'])
 
     return user_id
