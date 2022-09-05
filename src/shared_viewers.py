@@ -37,12 +37,12 @@ def channel_chatters(chatters_dict):
         error_alert.tele_notify(remarks = remarks)
   
     df1 = df1.fillna(0)
-    print(f"channel_chatters done")
+
     error_alert.tele_notify(remarks = '*SHARED_VIEWERS: channel_chatters done*')
     return df1  
 
 
-# n*4 matrix: [time, c_1, c_2, overlap]
+# n*3 matrix: [c_1, c_2, overlap]
 def channels_overlap(df1):
 
     pairs = []
@@ -59,7 +59,7 @@ def channels_overlap(df1):
         error_alert.tele_notify(remarks = remarks)
 
     shared = pd.DataFrame(shared_list, columns = ['c_1', 'c_2', 'Overlap'])
-    print(f"channels overlap done")
+
     error_alert.tele_notify(remarks = '*SHARED_VIEWERS: channels_overlap done*')
     return shared
 

@@ -54,18 +54,9 @@ def get_chatters_info(user_logins): # multiple users
 
 # union both old and new lists
 def merge_2_dicts(dict1, dict2):
-    res = {}
-    for k1, v1 in dict1.items():
-        if k1 not in res:
-            res[k1] = v1
-            
-        for k2, v2 in dict2.items():
-            if k2 not in res:
-                res[k2] = v2
-            elif k1 == k2:
-                temp = dict1[k1] + dict2[k2]
-                res[k1] = list(dict.fromkeys(temp))
-                
+    res = {key : list(set(dict1.get(key, []) + dict2.get(key, []))) 
+    for key in set(dict2) | set(dict1)}
+    
     return res
  
 
