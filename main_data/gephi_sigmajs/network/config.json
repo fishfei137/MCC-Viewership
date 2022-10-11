@@ -1,0 +1,56 @@
+{
+  "type": "network",
+  "version": "1.0",
+  "data": "data.json",
+  "logo": {
+    "file": "",
+    "link": "",
+    "text": ""
+  },
+  "text": {
+    "more": "MCC25 shared viewers",
+    "intro": "MCC25 shared viewers",
+    "title": ""
+  },
+  "legend": {
+    "edgeLabel": "Shared Viewers",
+    "colorLabel": "Modularity",
+    "nodeLabel": "Channel"
+  },
+  "features": {
+    "search": true,
+    "groupSelectorAttribute": false,
+    "hoverBehavior": false
+  },
+  "informationPanel": {
+    "groupByEdgeDirection": true,
+    "imageAttribute": false
+  },
+  "sigma": {
+    "drawingProperties": {
+      "defaultEdgeType": "curve",
+      "defaultHoverLabelBGColor": "#002147",
+      "defaultLabelBGColor": "#ddd",
+      "activeFontStyle": "bold",
+      "defaultLabelColor": "#fff",
+      "labelAlignment": "center",
+      "labelThreshold": 5,
+      "defaultLabelHoverColor": "#fff",
+      "fontStyle": "bold",
+      "hoverFontStyle": "bold",
+      "labelSize": "proportional",
+      "defaultLabelSize": 5,
+      "autoRescale": ["nodePosition, nodeSize"]
+    },
+    "graphProperties": {
+      "maxEdgeSize": 18,
+      "minEdgeSize": 3,
+      "minNodeSize": 5,
+      "maxNodeSize": 30
+    },
+    "mouseProperties": {
+      "maxRatio": 20,
+      "minRatio": 0.75
+    }
+  }
+}
