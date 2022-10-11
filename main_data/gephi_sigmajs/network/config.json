@@ -43,7 +43,7 @@
       "autoRescale": ["nodePosition, nodeSize"]
     },
     "graphProperties": {
-      "maxEdgeSize": 18,
+      "maxEdgeSize": 25,
       "minEdgeSize": 3,
       "minNodeSize": 5,
       "maxNodeSize": 30
