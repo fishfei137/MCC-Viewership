@@ -8,19 +8,19 @@
     "text": ""
   },
   "text": {
-    "more": "MCC25 shared viewers",
-    "intro": "MCC25 shared viewers",
-    "title": ""
+    "more": "Shared viewers between each Twitch streamer during MCC25. Only keeps track of viewers who were in the chat (ie not counted if the viewer had their chat closed). Instead of using the full list of shared viewers, for each streamer, I filtered to the top 5 other streamers that they have an overlap of viewers with, so that the final network graph will not be as messy. A full list of shared viewers between every 2 streamers can be found in the google sheets I have shared. Each node (circle) represents the number of unique viewers of a Twitch channel, and each edge (line) represents the number of shared viewers between them and another channel, with more shared viewers = thicker line. The colours are automatically assigned by the software (based on their modularity class), which basically splits the streamers into different clusters based on who each streamer shares the most viewers with.",
+    "intro": "",
+    "title": "MCC25 shared viewers"
   },
   "legend": {
     "edgeLabel": "Shared Viewers",
-    "colorLabel": "Modularity",
+    "colorLabel": "Modularity Class",
     "nodeLabel": "Channel"
   },
   "features": {
     "search": true,
     "groupSelectorAttribute": false,
-    "hoverBehavior": false
+    "hoverBehavior": true
   },
   "informationPanel": {
     "groupByEdgeDirection": true,
@@ -33,7 +33,6 @@
       "defaultLabelBGColor": "#ddd",
       "activeFontStyle": "bold",
       "defaultLabelColor": "#fff",
-      "labelAlignment": "center",
       "labelThreshold": 5,
       "defaultLabelHoverColor": "#fff",
       "fontStyle": "bold",
@@ -43,7 +42,7 @@
       "autoRescale": ["nodePosition, nodeSize"]
     },
     "graphProperties": {
-      "maxEdgeSize": 25,
+      "maxEdgeSize": 30,
       "minEdgeSize": 3,
       "minNodeSize": 5,
       "maxNodeSize": 30
