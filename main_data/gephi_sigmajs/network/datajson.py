@@ -6,11 +6,9 @@ with open('./main_data/gephi_sigmajs/network/data.json', 'r') as f:
     data = json.load(f)
 
 colours = {}
-for node in data["nodes"]:
-    colours[node["attributes"]["Modularity Class"]] = node["color"]
-
 modclass = {}
 for node in data["nodes"]:
+    colours[node["attributes"]["Modularity Class"]] = node["color"]
     modclass[node["id"]] = node["attributes"]["Modularity Class"]
 
 for edge in data["edges"]:
